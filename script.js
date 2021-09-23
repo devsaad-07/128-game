@@ -12,7 +12,7 @@ const generate = function () {
   else generate();
 };
 
-const calC = function (cells) {
+const computeUpdatedGrid = function (cells) {
   let count = 0;
   for (let i = width - 1; i >= 0; i--) {
     if (cells[i] !== 0) {
@@ -46,6 +46,17 @@ const calC = function (cells) {
   return cells;
 };
 
+const updateBoard = function (
+  rowGrid,
+  columnGrid,
+  rowUpdatedGrid,
+  columnUpdatedGrid,
+  gridArray2
+) {
+  squares[width * rowGrid + columnGrid].innerHTML =
+    gridArray2[rowUpdatedGrid][columnUpdatedGrid];
+};
+
 const moveRight = function () {
   let gridArray1 = [],
     gridArray2 = [];
@@ -59,7 +70,7 @@ const moveRight = function () {
     for (let j = 0; j < cells.length; j++) {
       temp.push(cells[j]);
     }
-    temp = calC(temp);
+    temp = computeUpdatedGrid(temp);
     gridArray2.push(temp);
   }
 
@@ -70,56 +81,102 @@ const moveRight = function () {
   //console.log("no return", gridArray1, gridArray2);
   for (let i = 0; i < width; i++) {
     for (let j = 0; j < width; j++) {
-      squares[width * i + j].innerHTML = gridArray2[i][j];
+      //squares[width * i + j].innerHTML = gridArray2[i][j];
+      updateBoard(i, j, i, j, gridArray2);
     }
   }
   generate();
 };
 
 const moveLeft = function () {
+  let gridArray1 = [],
+    gridArray2 = [];
   for (let i = 0; i < width; i++) {
     let cells = [];
     for (let j = width - 1; j >= 0; j--) {
       cells.push(parseInt(squares[width * i + j].innerHTML));
     }
-    cells = calC(cells);
+    gridArray1.push(cells);
+    let temp = [];
+    for (let j = 0; j < cells.length; j++) {
+      temp.push(cells[j]);
+    }
+    temp = computeUpdatedGrid(temp);
+    gridArray2.push(temp);
+  }
+  if (JSON.stringify(gridArray2) === JSON.stringify(gridArray1)) {
+    //console.log("return");
+    return;
+  }
+  for (let i = 0; i < width; i++) {
     for (let j = 0; j < width; j++) {
-      squares[width * i + j].innerHTML = cells[width - j - 1];
+      //squares[width * i + j].innerHTML = gridArray2[i][width-1-j];
+      updateBoard(i, j, i, width - 1 - j, gridArray2);
     }
   }
   generate();
 };
 
 const moveUp = function () {
+  let gridArray1 = [],
+    gridArray2 = [];
   for (let i = 0; i < width; i++) {
     let cells = [];
     for (let j = width - 1; j >= 0; j--) {
       cells.push(parseInt(squares[width * j + i].innerHTML));
     }
-    cells = calC(cells);
+    gridArray1.push(cells);
+    let temp = [];
+    for (let j = 0; j < cells.length; j++) {
+      temp.push(cells[j]);
+    }
+    temp = computeUpdatedGrid(temp);
+    gridArray2.push(temp);
+  }
+  if (JSON.stringify(gridArray2) === JSON.stringify(gridArray1)) {
+    //console.log("return");
+    return;
+  }
+  for (let i = 0; i < width; i++) {
     for (let j = 0; j < width; j++) {
-      squares[width * j + i].innerHTML = cells[width - 1 - j];
+      //squares[width * j + i].innerHTML = gridArray2[width-1-j][i];
+      updateBoard(j, i, i, width - 1 - j, gridArray2);
     }
   }
   generate();
 };
 
 const moveDown = function () {
+  let gridArray1 = [],
+    gridArray2 = [];
   for (let i = 0; i < width; i++) {
     let cells = [];
     for (let j = 0; j < width; j++) {
       cells.push(parseInt(squares[width * j + i].innerHTML));
     }
-    cells = calC(cells);
+    gridArray1.push(cells);
+    let temp = [];
+    for (let j = 0; j < cells.length; j++) {
+      temp.push(cells[j]);
+    }
+    temp = computeUpdatedGrid(temp);
+    gridArray2.push(temp);
+  }
+  if (JSON.stringify(gridArray2) === JSON.stringify(gridArray1)) {
+    //console.log("return");
+    return;
+  }
+  for (let i = 0; i < width; i++) {
     for (let j = 0; j < width; j++) {
-      squares[width * j + i].innerHTML = cells[j];
+      //squares[width * j + i].innerHTML = gridArray2[i][j];
+      updateBoard(j, i, i, j, gridArray2);
     }
   }
   generate();
 };
 
 document.addEventListener("keydown", function (e) {
-  console.log(e.key);
+  //console.log(e.key);
   switch (e.key) {
     case "ArrowUp":
       moveUp();
