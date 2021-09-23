@@ -1,0 +1,19 @@
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 600px;
+  height: 600px;
+  background-color: chocolate;
+}
+
+.grid-square {
+  width: 180.25px;
+  height: 180.25px;
+  margin: 9px;
+  float: left;
+  border-radius: 3px;
+  background: rgba(238, 228, 218, 0.35);
+  font-size: 80px;
+  text-align: center;
+  font-weight: bold;
+}
