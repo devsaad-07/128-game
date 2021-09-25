@@ -1,19 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap");
+
+body {
+  margin: 0px;
+  font-family: "Roboto", sans-serif;
+}
 .grid {
+  position: relative;
+  bottom: 9vw;
   display: flex;
   flex-wrap: wrap;
-  width: 600px;
-  height: 600px;
-  background-color: chocolate;
+  width: 35vw;
+  height: 35vw;
+  background-color: #bbada0;
+  border-radius: 6px;
+  margin-left: 35vw;
+  margin-top: 2vw;
 }
 
 .grid-square {
-  width: 180.25px;
-  height: 180.25px;
-  margin: 9px;
+  width: 10vw;
+  height: 10vw;
+  margin: 0.83vw;
   float: left;
-  border-radius: 3px;
+  border-radius: 6px;
   background: rgba(238, 228, 218, 0.35);
-  font-size: 80px;
+  font-size: 7vw;
   text-align: center;
   font-weight: bold;
+}
+
+.score-container,
+.best-score-container {
+  background-color: #bbada0;
+  width: 6vw;
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  font-size: 1.3vw;
+  float: right;
+  margin-left: 10px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+}
+
+#score,
+#best-score {
+  font-size: 3vw;
+}
+
+.new-game {
+  width: 20vw;
+}
+
+#new-game {
+  position: relative;
+  padding: 5px;
+  border-radius: 6px;
+  top: 5vw;
+  left: 7vw;
+  font-size: 3vw;
+  width: 20vw;
+  height: 50px;
+  background-color: #bbada0;
+}
+
+main {
+  width: 70vw;
+  /* background-color: aqua; */
+  /* margin-left: 5vw; */
+  margin-top: 20px;
+}
+
+.game-name {
+  position: relative;
+  bottom: 2vw;
+  width: 10vw;
+  float: left;
+  margin-left: 25vw;
+  font-size: 5vw;
 }

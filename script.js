@@ -3,13 +3,51 @@
 const gridDisplay = document.querySelector(".grid");
 const scoreDisplay = document.getElementById("score");
 const resultDisplay = document.getElementById("result");
+const newGame = document.querySelector(".new-game");
+const bestScoreDisplay = document.getElementById("best-score");
+let gameWon = false;
+
+let gameOver = 0;
+
 let squares = [];
 const width = 3;
+let gridArray1 = [],
+  gridArray2 = [];
+let score = 0,
+  bestScore = 0;
 
 const generate = function () {
   let randomNumber = Math.floor(Math.random() * squares.length);
-  if (squares[randomNumber].innerHTML == 0) squares[randomNumber].innerHTML = 2;
+  let numberChoice = Math.floor(Math.random() * 2);
+  if (squares[randomNumber].innerHTML == 0)
+    squares[randomNumber].innerHTML = numberChoice === 0 ? 2 : 4;
   else generate();
+};
+
+const isGameOver = function () {
+  gridArray1 = [];
+  for (let i = 0; i < width; i++) {
+    let cells = [];
+    for (let j = 0; j < width; j++) {
+      cells.push(parseInt(squares[width * i + j].innerHTML));
+    }
+    gridArray1.push(cells);
+  }
+
+  for (let i = 0; i < gridArray1.length; i++) {
+    for (let j = 0; j < gridArray1[i].length; j++) {
+      if (
+        (i < width - 1 && gridArray1[i][j] === gridArray1[i + 1][j]) ||
+        gridArray1[i][j] === 0 ||
+        (j < width - 1 && gridArray1[i][j] === gridArray1[i][j + 1])
+      ) {
+        return false;
+      }
+    }
+  }
+  bestScoreDisplay.textContent = bestScore;
+  gameOver = 1;
+  return true;
 };
 
 const computeUpdatedGrid = function (cells) {
@@ -30,6 +68,13 @@ const computeUpdatedGrid = function (cells) {
     }
     if (cells[i] === cells[i - 1]) {
       res.push((cells[i] *= 2));
+      if (cells[i] === 128) {
+        gameWon = true;
+      }
+      score += cells[i];
+      if (score > bestScore) {
+        bestScore = score;
+      }
       i--;
     } else {
       res.push(cells[i]);
@@ -42,7 +87,6 @@ const computeUpdatedGrid = function (cells) {
   for (let i = width - cells.length; i > 0; i--) {
     cells.unshift(0);
   }
-
   return cells;
 };
 
@@ -50,148 +94,167 @@ const updateBoard = function (
   rowGrid,
   columnGrid,
   rowUpdatedGrid,
-  columnUpdatedGrid,
-  gridArray2
+  columnUpdatedGrid
 ) {
   squares[width * rowGrid + columnGrid].innerHTML =
     gridArray2[rowUpdatedGrid][columnUpdatedGrid];
 };
 
+const helper = function () {
+  for (let i = 0; i < gridArray1.length; i++) {
+    let temp = [];
+    for (let j = 0; j < gridArray1[i].length; j++) {
+      temp.push(gridArray1[i][j]);
+    }
+    temp = computeUpdatedGrid(temp);
+    scoreDisplay.textContent = score;
+    gridArray2.push(temp);
+  }
+  if (JSON.stringify(gridArray2) === JSON.stringify(gridArray1)) {
+    return false;
+  }
+  return true;
+};
+
 const moveRight = function () {
-  let gridArray1 = [],
-    gridArray2 = [];
+  (gridArray1 = []), (gridArray2 = []);
   for (let i = 0; i < width; i++) {
     let cells = [];
     for (let j = 0; j < width; j++) {
       cells.push(parseInt(squares[width * i + j].innerHTML));
     }
     gridArray1.push(cells);
-    let temp = [];
-    for (let j = 0; j < cells.length; j++) {
-      temp.push(cells[j]);
+  }
+  if (helper(gridArray1, gridArray2)) {
+    for (let i = 0; i < width; i++) {
+      for (let j = 0; j < width; j++) {
+        updateBoard(i, j, i, j, gridArray2);
+      }
     }
-    temp = computeUpdatedGrid(temp);
-    gridArray2.push(temp);
+    generate();
   }
-
-  if (JSON.stringify(gridArray2) === JSON.stringify(gridArray1)) {
-    //console.log("return");
-    return;
-  }
-  //console.log("no return", gridArray1, gridArray2);
-  for (let i = 0; i < width; i++) {
-    for (let j = 0; j < width; j++) {
-      //squares[width * i + j].innerHTML = gridArray2[i][j];
-      updateBoard(i, j, i, j, gridArray2);
-    }
-  }
-  generate();
 };
 
 const moveLeft = function () {
-  let gridArray1 = [],
-    gridArray2 = [];
+  (gridArray1 = []), (gridArray2 = []);
   for (let i = 0; i < width; i++) {
     let cells = [];
     for (let j = width - 1; j >= 0; j--) {
       cells.push(parseInt(squares[width * i + j].innerHTML));
     }
     gridArray1.push(cells);
-    let temp = [];
-    for (let j = 0; j < cells.length; j++) {
-      temp.push(cells[j]);
+  }
+  if (helper(gridArray1, gridArray2)) {
+    for (let i = 0; i < width; i++) {
+      for (let j = 0; j < width; j++) {
+        updateBoard(i, j, i, width - 1 - j, gridArray2);
+      }
     }
-    temp = computeUpdatedGrid(temp);
-    gridArray2.push(temp);
+    generate();
   }
-  if (JSON.stringify(gridArray2) === JSON.stringify(gridArray1)) {
-    //console.log("return");
-    return;
-  }
-  for (let i = 0; i < width; i++) {
-    for (let j = 0; j < width; j++) {
-      //squares[width * i + j].innerHTML = gridArray2[i][width-1-j];
-      updateBoard(i, j, i, width - 1 - j, gridArray2);
-    }
-  }
-  generate();
 };
 
 const moveUp = function () {
-  let gridArray1 = [],
-    gridArray2 = [];
+  (gridArray1 = []), (gridArray2 = []);
   for (let i = 0; i < width; i++) {
     let cells = [];
     for (let j = width - 1; j >= 0; j--) {
       cells.push(parseInt(squares[width * j + i].innerHTML));
     }
     gridArray1.push(cells);
-    let temp = [];
-    for (let j = 0; j < cells.length; j++) {
-      temp.push(cells[j]);
+  }
+  if (helper(gridArray1, gridArray2)) {
+    for (let i = 0; i < width; i++) {
+      for (let j = 0; j < width; j++) {
+        updateBoard(j, i, i, width - 1 - j, gridArray2);
+      }
     }
-    temp = computeUpdatedGrid(temp);
-    gridArray2.push(temp);
+    generate();
   }
-  if (JSON.stringify(gridArray2) === JSON.stringify(gridArray1)) {
-    //console.log("return");
-    return;
-  }
-  for (let i = 0; i < width; i++) {
-    for (let j = 0; j < width; j++) {
-      //squares[width * j + i].innerHTML = gridArray2[width-1-j][i];
-      updateBoard(j, i, i, width - 1 - j, gridArray2);
-    }
-  }
-  generate();
 };
 
 const moveDown = function () {
-  let gridArray1 = [],
-    gridArray2 = [];
+  (gridArray1 = []), (gridArray2 = []);
   for (let i = 0; i < width; i++) {
     let cells = [];
     for (let j = 0; j < width; j++) {
       cells.push(parseInt(squares[width * j + i].innerHTML));
     }
     gridArray1.push(cells);
-    let temp = [];
-    for (let j = 0; j < cells.length; j++) {
-      temp.push(cells[j]);
+  }
+  if (helper(gridArray1, gridArray2)) {
+    for (let i = 0; i < width; i++) {
+      for (let j = 0; j < width; j++) {
+        updateBoard(j, i, i, j, gridArray2);
+      }
     }
-    temp = computeUpdatedGrid(temp);
-    gridArray2.push(temp);
+    generate();
   }
-  if (JSON.stringify(gridArray2) === JSON.stringify(gridArray1)) {
-    //console.log("return");
-    return;
-  }
-  for (let i = 0; i < width; i++) {
-    for (let j = 0; j < width; j++) {
-      //squares[width * j + i].innerHTML = gridArray2[i][j];
-      updateBoard(j, i, i, j, gridArray2);
-    }
-  }
-  generate();
 };
 
 document.addEventListener("keydown", function (e) {
-  //console.log(e.key);
   switch (e.key) {
     case "ArrowUp":
-      moveUp();
+      e.preventDefault();
+      if (!gameOver || !gameWon) {
+        moveUp();
+        if (isGameOver()) {
+          alert("Game Over!");
+        }
+        if (gameWon) {
+          alert("Game Lost");
+        }
+      }
       break;
     case "ArrowDown":
-      moveDown();
+      e.preventDefault();
+      if (!gameOver || !gameWon) {
+        moveDown();
+        if (isGameOver()) {
+          alert("Game Over!");
+        }
+        if (gameWon) {
+          alert("Game Lost");
+        }
+      }
       break;
     case "ArrowRight":
-      console.log("right");
-      moveRight();
+      e.preventDefault();
+      if (!gameOver || !gameWon) {
+        moveRight();
+        if (isGameOver()) {
+          alert("Game Over!");
+        }
+        if (gameWon) {
+          alert("Game Lost");
+        }
+      }
       break;
     case "ArrowLeft":
-      moveLeft();
+      e.preventDefault();
+      if (!gameOver || !gameWon) {
+        moveLeft();
+        if (isGameOver()) {
+          alert("Game Over!");
+        }
+        if (gameWon) {
+          alert("Game Lost");
+        }
+      }
       break;
   }
+});
+
+newGame.addEventListener("click", function () {
+  gameOver = 0;
+  gameWon = false;
+  score = 0;
+  scoreDisplay.textContent = 0;
+  for (let i = 0; i < squares.length; i++) {
+    squares[i].innerHTML = 0;
+  }
+  generate();
+  generate();
 });
 
 const createBoard = function () {
@@ -207,7 +270,6 @@ const createBoard = function () {
     }
     gridDisplay.appendChild(row);
   }
-
   generate();
   generate();
 };
